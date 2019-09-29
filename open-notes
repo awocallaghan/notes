@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+NOTES_DIR="${DIR}/.notes"
+
+main() {
+  local from=$1
+  local to=$2
+  if [ "$from" == "" ]; then
+    from="$(date --date yesterday +%Y-%m-%d)"
+  fi
+  if [ "$to" == "" ]; then
+    to="$(date +%Y-%m-%d)"
+  fi
+
+  local notes="$(ls -l ${NOTES_DIR} | awk '{ if ($9 >= "'$from'" && $9 <= "'$to'") print "'$NOTES_DIR'/"$9 }')"
+  vim -o $notes
+}
+
+main $@

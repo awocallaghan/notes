@@ -16,8 +16,13 @@ main() {
 
   local notes
   notes="$(find "${NOTES_DIR}" -type f -printf "%f\n" | awk '{ if ($1 >= "'"${from}"'" && $1 <= "'"${to}"'") print "'"${NOTES_DIR}"'/"$1 }')"
-  # shellcheck disable=SC2086
-  vim -o $notes
+
+  if [ "$notes" == "" ]; then
+    echo "No notes found in range ${from} => ${to}"
+  else
+    # shellcheck disable=SC2086
+    vim -o $notes
+  fi
 }
 
 main "$@"

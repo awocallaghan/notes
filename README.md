@@ -1,6 +1,6 @@
 # notes
 
-Keep notes throughout the date of things you want to talk about at standup
+Keep notes throughout the day of things you want to talk about at standup
 
 ## Scripts
 

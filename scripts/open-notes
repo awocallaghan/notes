@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-NOTES_DIR="${DIR}/.notes"
+NOTES_DIR_NAME=".notes"
+NOTES_DIR="${DIR}/../${NOTES_DIR_NAME}"
 
 main() {
   local from=$1
@@ -13,8 +14,10 @@ main() {
     to="$(date +%Y-%m-%d)"
   fi
 
-  local notes="$(ls -l ${NOTES_DIR} | awk '{ if ($9 >= "'$from'" && $9 <= "'$to'") print "'$NOTES_DIR'/"$9 }')"
+  local notes
+  notes="$(find "${NOTES_DIR}" -type f -printf "%f\n" | awk '{ if ($1 >= "'"${from}"'" && $1 <= "'"${to}"'") print "'"${NOTES_DIR}"'/"$1 }')"
+  # shellcheck disable=SC2086
   vim -o $notes
 }
 
-main $@
+main "$@"

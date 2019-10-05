@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+NOTES_DIR_NAME=".notes"
+NOTES_DIR="${DIR}/../${NOTES_DIR_NAME}"
+
+get_file() {
+  # Create directory if it doesn't exist
+  if [ ! -d "${NOTES_DIR}" ]; then
+    mkdir -p "${NOTES_DIR}"
+  fi
+  local date
+  date="$(date +%Y-%m-%d)"
+  local file_name
+  file_name="${NOTES_DIR}/${date}"
+  # Create notes file if it doesn't exist
+  if [ ! -f "${file_name}" ]; then
+    touch "${file_name}"
+    {
+      echo "${date}"
+      echo "==="
+      echo " "
+    } >> "${file_name}"
+  fi
+  echo "${file_name}"
+}
+
+main() {
+  local file
+  file="$(get_file)"
+  echo "* $*" >> "${file}"
+  echo "Logged note in ${file}"
+}
+
+main "$@"

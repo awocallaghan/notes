@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+TEST_NOTES_DIRECTORY="${DIR}/test_notes"
+
+setUp() {
+  export NOTES_DIRECTORY="${TEST_NOTES_DIRECTORY}"
+}
+
+tearDown() {
+  rm -rf "${TEST_NOTES_DIRECTORY}"
+  unset NOTES_DIRECTORY
+}
+
+testCreatesDirectory() {
+  "${DIR}"/../scripts/log-note Test
+  assertTrue "[ -d ${TEST_NOTES_DIRECTORY} ]"
+}
+
+testCreatesFile() {
+  "${DIR}"/../scripts/log-note Test
+
+  local fileName
+  fileName="${TEST_NOTES_DIRECTORY}/$(date +%Y-%m-%d)"
+  local fileContent
+  fileContent=$(cat "${fileName}")
+  local expectedFileContent
+  expectedFileContent=$(echo -e "$(date +%Y-%m-%d)\n===\n \n* Test")
+  assertTrue "[ -f ${fileName} ]"
+  assertEquals "${expectedFileContent}" "${fileContent}"
+}
+
+testAppendsToFile() {
+  "${DIR}"/../scripts/log-note First note
+  "${DIR}"/../scripts/log-note Second note
+
+  local fileName
+  fileName="${TEST_NOTES_DIRECTORY}/$(date +%Y-%m-%d)"
+  local fileContent
+  fileContent=$(cat "${fileName}")
+  assertNotNull "$(echo "${fileContent}" | grep -F -- "First note")"
+  assertNotNull "$(echo "${fileContent}" | grep -F -- "Second note")"
+}
+
+# shellcheck disable=SC1091
+. shunit2

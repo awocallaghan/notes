@@ -1,1 +1,1 @@
-shellcheck scripts/*
+shellcheck scripts/* tests/*

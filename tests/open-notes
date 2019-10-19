@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+TEST_NOTES_DIRECTORY="${DIR}/test_notes"
+
+setUp() {
+  export NOTES_DIRECTORY="${TEST_NOTES_DIRECTORY}"
+  export NOTES_EDITOR="echo"
+  mkdir "${TEST_NOTES_DIRECTORY}"
+}
+
+tearDown() {
+  rm -rf "${TEST_NOTES_DIRECTORY}"
+  unset NOTES_DIRECTORY
+}
+
+testOpensTodayAndYesterdayByDefault() {
+  local yesterday_filename
+  local today_filename
+  yesterday_filename="${TEST_NOTES_DIRECTORY}/$(date --date yesterday +%Y-%m-%d)"
+  today_filename="${TEST_NOTES_DIRECTORY}/$(date +%Y-%m-%d)"
+  touch "${yesterday_filename}"
+  touch "${today_filename}"
+
+  local output
+  output=$("${DIR}"/../scripts/open-notes)
+
+  assertEquals "${yesterday_filename} ${today_filename}" "${output}"
+}
+
+testDoesntOpenNonExistantFiles() {
+  local today_filename
+  today_filename="${TEST_NOTES_DIRECTORY}/$(date +%Y-%m-%d)"
+  touch "${today_filename}"
+
+  local output
+  output=$("${DIR}"/../scripts/open-notes)
+
+  assertEquals "${today_filename}" "${output}"
+}
+
+testOpensFilesInGivenRange() {
+  local from
+  local to
+  from="2019-10-10"
+  to="2019-10-15"
+  for i in {5..20}
+  do
+    touch "${TEST_NOTES_DIRECTORY}/2019-10-${i}"
+  done
+
+  local output
+  output=$("${DIR}/../scripts/open-notes" "${from}" "${to}")
+
+  local expected
+  expected="${TEST_NOTES_DIRECTORY}/2019-10-10"
+  for i in {11..15}
+  do
+    expected="${expected} ${TEST_NOTES_DIRECTORY}/2019-10-${i}"
+  done
+  assertEquals "${expected}" "${output}"
+}
+
+# shellcheck disable=SC1091
+. shunit2

@@ -21,7 +21,7 @@ main() {
     echo "No notes found in range ${from} => ${to}"
   else
     # shellcheck disable=SC2086
-    vim -o $notes
+    $NOTES_EDITOR $notes
   fi
 }
 

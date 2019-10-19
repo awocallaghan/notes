@@ -3,3 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEFAULT_NOTES_DIR="${DIR}/../.notes"
 export NOTES_DIR="${NOTES_DIRECTORY:-$DEFAULT_NOTES_DIR}"
+
+DEFAULT_NOTES_EDITOR="vim -o"
+export NOTES_EDITOR="${NOTES_EDITOR:-$DEFAULT_NOTES_EDITOR}"
